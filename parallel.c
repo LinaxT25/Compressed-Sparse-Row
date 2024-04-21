@@ -62,15 +62,26 @@ void conta_elementos_dif0()
 
 // ----------------------------------------------------------------------------
 void compacta_vetor()
-{
-    int j = 0;
-    for (int i = 0; (i < n) && (j < m); i++)
-		    if (vetIn[i] != 0)
-		    {
-			    valor[j]   = vetIn[i];
-			    posicao[j] = i;
-			    j++;
-		    }
+{ 
+    int j = -1;
+	
+	#pragma omp parallel for schedule(static) shared(j) 
+	for (int i = 0; i < n; i++)
+	{
+		if(j >= m) continue;
+	
+		if(vetIn[i] != 0)
+		{	
+			#pragma omp atomic update
+			j++;
+			#pragma omp atomic read
+			valor[j] = vetIn[i];
+			// //printf("valor[%d] = %d\n", j, valor[j]);
+			#pragma omp atomic write
+			posicao[j] = i;
+			// //printf("posicao[%d] = %d\n", j, posicao[j]);	
+		}	
+	}    
 }
 
 // ----------------------------------------------------------------------------

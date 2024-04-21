@@ -63,12 +63,14 @@ void conta_elementos_dif0()
 void compacta_vetor()
 {
 	int j = 0;
-	for (int i = 0; (i < n) && (j < m); i++)
+	int i = 0;
+	for (i = 0; (i < n) && (j < m); i++)
 		if (vetIn[i] != 0)
 		{
 			valor[j]   = vetIn[i];
 			posicao[j] = i;
 			j++;
+			
 		}
 }
 
