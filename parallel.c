@@ -14,7 +14,8 @@ int n,	// Número de elementos do vetor de entrada
 	 m,	// Número de elementos diferentes de 0 do vetor de entrada e tamanho dos vetores de saída
 	 *vetIn,	// Vetor de entrada com n dados esparsos
 	 *valor,	// Vetor de saída com valores dos m dados diferentes de 0
-	 *posicao;	// Vetor de saída com posição no vetor de entrada dos m dados diferentes de 0
+	 *posicao,	// Vetor de saída com posição no vetor de entrada dos m dados diferentes de 0
+	 *vetaux;   // Vetor auxilar para pegar a posição do vetor de entrada
 
 // ----------------------------------------------------------------------------
 void inicializa(char* nome_arq_entrada)
@@ -54,32 +55,35 @@ void aloca_vetores_saida()
 void conta_elementos_dif0()
 {
 	m = 0;
-    #pragma omp parallel for reduction(+:m)
-	for (int i = 0; i < n; i++)
-		if (vetIn[i] != 0)
-			m++;
+
+	#pragma omp parallel for reduction(+:m)
+		for(int i=0; i < n; i++)
+			if(vetIn[i] != 0)
+				m++;
+
+	// vetaux = malloc(m * sizeof(int));
+
+	// #pragma omp parallel for collapse(2)
+	// for(int i = 0; i < m; i++)
+	// 	for(int j = 0; j < n; j++)
+	// 		if(vetIn[j] != 0)
+	// 		{	
+	// 			#pragma omp critical
+	// 			vetaux[i] = i;
+	// 			#pragma omp atomic
+	// 			i++;
+	// 			//printf("i = %d\n", i);
+	// 		}
 }
 
 // ----------------------------------------------------------------------------
 void compacta_vetor()
 { 
-	int j = 0;
- 
-    #pragma omp parallel for schedule(static) ordered
-	for (int i = 0; i < n; i++)
+    #pragma omp parallel for
+	for (int i = 0; i < m; i++)
 	{
-		if(j >= m) continue;
-		
-		if(vetIn[i] != 0) 
-		{
-			#pragma omp ordered
-			{
-				posicao[j] = i;
-				valor[j] = vetIn[i];
-			}
-			#pragma omp atomic
-			j++;
-		}
+		//valor[i] = vetIn[vetaux[i]];
+		posicao[i] = vetaux[i];
 	}
 }
 
@@ -126,6 +130,7 @@ int main(int argc, char** argv)
 
 	// Lê arquivo de entrada e inicializa estruturas de dados
 	inicializa(nome_arq_entrada);
+
 
 	double tini = omp_get_wtime(); // Medição de tempo exclui entrada, saída, alocação e liberação
 
