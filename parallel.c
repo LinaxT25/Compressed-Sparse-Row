@@ -62,7 +62,8 @@ void conta_elementos_dif0()
 		if(vetIn[i] != 0)
 			m++;
 	
-	vetaux = malloc(m * sizeof(int));
+	// Aloca vetor auxiliar(custo extremamente baixo de desempenho)
+	vetaux = malloc(m * sizeof(int)); 
 
 	for(int i=0; i < n; i++)
 		if(vetIn[i] != 0)
@@ -80,9 +81,7 @@ void compacta_vetor()
 	{
 		posicao[i] = vetaux[i];
 		valor[i] = vetIn[vetaux[i]];
-	}
-	
-	free(vetaux);		
+	}		
 }
 
 // ----------------------------------------------------------------------------
@@ -104,6 +103,9 @@ void finaliza(char* nome_arq_saida)
 	// Libera vetores de saída
 	free(valor);
 	free(posicao);
+
+	// Libera vetor auxiliar
+	free(vetaux); 
 
 	// Libera vetor de entrada
 	free(vetIn);
