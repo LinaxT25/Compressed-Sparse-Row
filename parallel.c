@@ -81,7 +81,8 @@ void compacta_vetor()
 		posicao[i] = vetaux[i];
 		valor[i] = vetIn[vetaux[i]];
 	}
-			
+	
+	free(vetaux);		
 }
 
 // ----------------------------------------------------------------------------
