@@ -58,25 +58,18 @@ void conta_elementos_dif0()
 	int aux = 0;
 
 	#pragma omp parallel for reduction(+:m)
-		for(int i=0; i < n; i++)
-			if(vetIn[i] != 0)
-				m++;
-
+	for(int i=0; i < n; i++)
+		if(vetIn[i] != 0)
+			m++;
+	
 	vetaux = malloc(m * sizeof(int));
 
-	#pragma omp parallel for
-	for(int i = 0; i < m; i++)
-		while(aux < n)
-			if(vetIn[aux] != 0)
-			{	
-				vetaux[i] = aux;
-				#pragma omp atomic
-				aux++;
-				break;
-			}
-			else
-				#pragma omp atomic
-				aux++;
+	for(int i=0; i < n; i++)
+		if(vetIn[i] != 0)
+		{
+			vetaux[aux] = i;
+			aux++;
+		}
 }
 
 // ----------------------------------------------------------------------------
@@ -85,9 +78,10 @@ void compacta_vetor()
     #pragma omp parallel for
 	for (int i = 0; i < m; i++)
 	{
-		valor[i] = vetIn[vetaux[i]];
 		posicao[i] = vetaux[i];
+		valor[i] = vetIn[vetaux[i]];
 	}
+			
 }
 
 // ----------------------------------------------------------------------------
