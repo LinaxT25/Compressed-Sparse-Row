@@ -53,6 +53,21 @@ void aloca_vetores_saida()
 }
 
 // ----------------------------------------------------------------------------
+
+/* 
+	Observações: A professora deu algumas dicas basicamente, em resumo temos o seguinte:
+ * Modificar o for do conta_elementos_dif0(não deve ter outra coisa dentro da função além do for acredito eu)
+ * Vamos ter uma variável global(talvez até mais, porém definitivamente uma variável auxiliar)
+ * Ela não descartou a ideia de um vetor, porém pelo que foi dito deve ser menor que m e n(então deve ser possível fazer com ou sem)
+
+   Com base no que ela disse eu acredito que a ideia de preencher o vetor de posição nessa função
+deve estar errada, o foco dela foi em explicar que as threads vão distribuir as interações entre elas
+dessa forma a possibilidade que vem na minha mente é de realizar a contagem das interações que cada thread
+realiza e utilizar isso de alguma forma, teoricamente eu acredito que seja possível pegar essas interações com base
+no omp_get_thread_num() e omp_get_num_threads(), a dificuldade vai ser em utilizar posteriormente esse elemento na
+função compacta_vetor.
+
+ */
 void conta_elementos_dif0()
 {
 	m = 0;
@@ -63,19 +78,28 @@ void conta_elementos_dif0()
 		// // Pega o valor de interação correspondente a cada thread
 		// interactionst = (n / omp_get_num_threads()) * omp_get_thread_num();
 		// printf("Thread %d: interactionst = %d\n", omp_get_thread_num(), interactionst);
+
+		// Uma ideia mais interessante pode ser realizar a contagem dentro do próprio for
+		// se cria um vetor auxiliar com tamanho das x threads e incrementamos a posição com base na
+		// thread que está realizando a interação, com isso vamos ter a contagem de interações de cada thread.
+		// vetor = malloc(omp_get_num_threads() * sizeof(int));
+		// vetor[opm_get_thread_num()] = vetor[omp_get_thread_num()] + 1;
+		// com isso acredito que seja possível obter a contagem de interações de cada thread
+		// que somadas devem dar o intervalo n, mas não sei se é a forma correta de pensar e como incluir na outra função
+
 		if (vetIn[i] != 0)
 			m++;
 
 	}
-	printf("test = %d\n", test);
+	// printf("test = %d\n", test);
 
-	#pragma omp parallel
-	for(int i = 0; i < 1; i++)
-	{
-		//Pega o valor de interação correspondente a cada thread
-		interactionst = (n / omp_get_num_threads());
-		//printf("Thread %d: interactionst = %d\n", omp_get_thread_num(), interactionst);
-	}
+	// #pragma omp parallel
+	// for(int i = 0; i < 1; i++)
+	// {
+	// 	//Pega o valor de interação correspondente a cada thread
+	// 	interactionst = (n / omp_get_num_threads());
+	// 	//printf("Thread %d: interactionst = %d\n", omp_get_thread_num(), interactionst);
+	// }
 }
 
 // ----------------------------------------------------------------------------
