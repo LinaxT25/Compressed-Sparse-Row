@@ -12,6 +12,7 @@
 // Variáveis globais
 int n,	// Número de elementos do vetor de entrada
 	 m,	// Número de elementos diferentes de 0 do vetor de entrada e tamanho dos vetores de saída
+	 interactionst, // Número de interações realizadas por cada thread
 	 *vetIn,	// Vetor de entrada com n dados esparsos
 	 *valor,	// Vetor de saída com valores dos m dados diferentes de 0
 	 *posicao,	// Vetor de saída com posição no vetor de entrada dos m dados diferentes de 0
@@ -55,33 +56,40 @@ void aloca_vetores_saida()
 void conta_elementos_dif0()
 {
 	m = 0;
-	int aux = 0;
-
-	#pragma omp parallel for reduction(+:m)
-	for(int i=0; i < n; i++)
-		if(vetIn[i] != 0)
+	int test = 0;
+	#pragma omp parallel reduction(+:m)
+	for (int i = 0; i < n; i++)
+	{
+		// // Pega o valor de interação correspondente a cada thread
+		// interactionst = (n / omp_get_num_threads()) * omp_get_thread_num();
+		// printf("Thread %d: interactionst = %d\n", omp_get_thread_num(), interactionst);
+		if (vetIn[i] != 0)
 			m++;
-	
-	// Aloca vetor auxiliar(custo extremamente baixo de desempenho)
-	vetaux = malloc(m * sizeof(int)); 
 
-	for(int i=0; i < n; i++)
-		if(vetIn[i] != 0)
-		{
-			vetaux[aux] = i;
-			aux++;
-		}
+	}
+	printf("test = %d\n", test);
+
+	#pragma omp parallel
+	for(int i = 0; i < 1; i++)
+	{
+		//Pega o valor de interação correspondente a cada thread
+		interactionst = (n / omp_get_num_threads());
+		//printf("Thread %d: interactionst = %d\n", omp_get_thread_num(), interactionst);
+	}
 }
 
 // ----------------------------------------------------------------------------
 void compacta_vetor()
 { 
-    #pragma omp parallel for
-	for (int i = 0; i < m; i++)
-	{
-		posicao[i] = vetaux[i];
-		valor[i] = vetIn[vetaux[i]];
-	}		
+    int j = 0;
+	int i = 0;
+	for (i = 0; (i < n) && (j < m); i++)
+		if (vetIn[i] != 0)
+		{
+			valor[j]   = vetIn[i];
+			posicao[j] = i;
+			j++;
+		}
 }
 
 // ----------------------------------------------------------------------------
