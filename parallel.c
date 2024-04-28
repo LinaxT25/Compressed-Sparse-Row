@@ -14,8 +14,7 @@ int n,	// Número de elementos do vetor de entrada
 	 m,	// Número de elementos diferentes de 0 do vetor de entrada e tamanho dos vetores de saída
 	 *vetIn,	// Vetor de entrada com n dados esparsos
 	 *valor,	// Vetor de saída com valores dos m dados diferentes de 0
-	 *posicao,	// Vetor de saída com posição no vetor de entrada dos m dados diferentes de 0
-	 *vetaux;   // Vetor auxilar para pegar a posição do vetor de entrada
+	 *posicao;	// Vetor de saída com posição no vetor de entrada dos m dados diferentes de 0
 
 // ----------------------------------------------------------------------------
 void inicializa(char* nome_arq_entrada)
@@ -55,32 +54,30 @@ void aloca_vetores_saida()
 void conta_elementos_dif0()
 {
 	m = 0;
-	int aux = 0;
-
+	
 	#pragma omp parallel for reduction(+:m)
 	for(int i=0; i < n; i++)
 		if(vetIn[i] != 0)
 			m++;
 	
-	// Aloca vetor auxiliar(custo extremamente baixo de desempenho)
-	vetaux = malloc(m * sizeof(int)); 
-
-	for(int i=0; i < n; i++)
-		if(vetIn[i] != 0)
-		{
-			vetaux[aux] = i;
-			aux++;
-		}
 }
 
 // ----------------------------------------------------------------------------
 void compacta_vetor()
 { 
+	int aux = 0;
+
+	for(int i=0; i < n; i++)
+		if(vetIn[i] != 0)
+		{
+			posicao[aux] = i;
+			aux++;
+		}
+
     #pragma omp parallel for
 	for (int i = 0; i < m; i++)
 	{
-		posicao[i] = vetaux[i];
-		valor[i] = vetIn[vetaux[i]];
+		valor[i] = vetIn[posicao[i]];
 	}		
 }
 
@@ -104,8 +101,6 @@ void finaliza(char* nome_arq_saida)
 	free(valor);
 	free(posicao);
 
-	// Libera vetor auxiliar
-	free(vetaux); 
 
 	// Libera vetor de entrada
 	free(vetIn);
