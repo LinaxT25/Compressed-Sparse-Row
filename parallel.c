@@ -55,6 +55,7 @@ void conta_elementos_dif0()
 {
 	m = 0;
 	
+	// Paralelizar a contagem dos elementos diferentes de 0
 	#pragma omp parallel for reduction(+:m)
 	for(int i=0; i < n; i++)
 		if(vetIn[i] != 0)
@@ -65,8 +66,10 @@ void conta_elementos_dif0()
 // ----------------------------------------------------------------------------
 void compacta_vetor()
 { 
-	int aux = 0;
+	int aux = 0; // Variável auxilar para incrementar o indice
 
+	// Quebrar o loop em 2 de forma a resolver o problema de dependência
+	// Primeiro for pegando somente os indices diferentes de 0
 	for(int i=0; i < n; i++)
 		if(vetIn[i] != 0)
 		{
@@ -74,6 +77,7 @@ void compacta_vetor()
 			aux++;
 		}
 
+	// Segundo for colocando os valores
     #pragma omp parallel for
 	for (int i = 0; i < m; i++)
 	{
