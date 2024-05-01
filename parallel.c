@@ -12,7 +12,6 @@
 // Variáveis globais
 int n,	// Número de elementos do vetor de entrada
 	 m,	// Número de elementos diferentes de 0 do vetor de entrada e tamanho dos vetores de saída
-	 interactionst, // Número de interações realizadas por cada thread
 	 *vetIn,	// Vetor de entrada com n dados esparsos
 	 *valor,	// Vetor de saída com valores dos m dados diferentes de 0
 	 *posicao,	// Vetor de saída com posição no vetor de entrada dos m dados diferentes de 0
@@ -59,13 +58,16 @@ void conta_elementos_dif0()
 
 	#pragma omp parallel
 	{
+		// Aloca o vetor auxilar usa somente uma thread para evitar problemas de concorrência
 		#pragma omp single
 		vetaux = malloc(omp_get_num_threads() * sizeof(int));
 
+		// Inicializa com 0 o vetor auxiliar em cada thread, como consequência em cada posição do vetor auxiliar
 		#pragma omp for
 		for(int i = 0; i < omp_get_num_threads(); i++)
 			vetaux[omp_get_thread_num()] = 0;
 
+		// Pega o número de interações que cada thread vai fazer
 		#pragma omp for reduction(+:m)
 		for (int i = 0; i < n; i++)
 			if (vetIn[i] != 0)
@@ -79,7 +81,6 @@ void conta_elementos_dif0()
 	// #pragma omp parallel for
 	// for(int i = 0; i < omp_get_num_threads(); i++)
 	// 	printf("Thread %d: %d\n", i, vetaux[i]);
-	
 	// printf("##################################################\n");
 }
 
@@ -88,8 +89,11 @@ void compacta_vetor()
 { 
 	#pragma omp parallel
 	{
-		int j = 0;
+		int j = 0; // Variável j para controlar o indice dos vetores de saída
 
+		// Cada thread vai realizar determinado número de interações com base na quantidade de threads
+		// que serão distribuídas no laço. A variável j vai ser incrementada para de acordo com as
+		// interações das threads, de forma a garantir a posição certa do indice.
 		for(int i = 0; i <= omp_get_thread_num(); i++)
 			j = j + vetaux[i];
 
@@ -105,7 +109,7 @@ void compacta_vetor()
 			if(vetIn[i] != 0)
 			{
 				// printf("Thread %d: %d\n", omp_get_thread_num(), j);
-				j--;
+				j--; // Decrementa o indice para ajustar a posição visto que inicia na posição 0
 				valor[j] = vetIn[i];
 				posicao[j] = i;	
 			}	
