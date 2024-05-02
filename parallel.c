@@ -78,10 +78,10 @@ void conta_elementos_dif0()
 			}	
 	}
 	
-	#pragma omp parallel for
-	for(int i = 0; i < omp_get_num_threads(); i++)
-		printf("Thread %d: %d\n", i, vetaux[i]);
-	printf("##################################################\n");
+// 	#pragma omp parallel for
+// 	for(int i = 0; i < omp_get_num_threads(); i++)
+// 		printf("Thread %d: %d\n", i, vetaux[i]);
+// 	printf("##################################################\n");
 }
 
 // ----------------------------------------------------------------------------
@@ -97,9 +97,9 @@ void compacta_vetor()
 		for(int i = 0; i < omp_get_thread_num(); i++)
 			j = j + vetaux[i];
 
-		#pragma omp for
-		for(int i = 0; i < omp_get_num_threads(); i++)
-			printf("Thread %d: %d\n", omp_get_thread_num(), j);
+		// #pragma omp for
+		// for(int i = 0; i < omp_get_num_threads(); i++)
+		// 	printf("Thread %d: %d\n", omp_get_thread_num(), j);
 
 		#pragma omp for
 		for(int i = 0 ; i < n; i++)
