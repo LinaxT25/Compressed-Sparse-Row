@@ -78,10 +78,10 @@ void conta_elementos_dif0()
 			}	
 	}
 	
-	// #pragma omp parallel for
-	// for(int i = 0; i < omp_get_num_threads(); i++)
-	// 	printf("Thread %d: %d\n", i, vetaux[i]);
-	// printf("##################################################\n");
+	#pragma omp parallel for
+	for(int i = 0; i < omp_get_num_threads(); i++)
+		printf("Thread %d: %d\n", i, vetaux[i]);
+	printf("##################################################\n");
 }
 
 // ----------------------------------------------------------------------------
@@ -94,12 +94,12 @@ void compacta_vetor()
 		// Cada thread vai realizar determinado número de interações com base na quantidade de threads
 		// que serão distribuídas no laço. A variável j vai ser incrementada para de acordo com as
 		// interações das threads, de forma a garantir a posição certa do indice.
-		for(int i = 0; i <= omp_get_thread_num(); i++)
+		for(int i = 0; i < omp_get_thread_num(); i++)
 			j = j + vetaux[i];
 
-		// #pragma omp for
-		// for(int i = 0; i < omp_get_num_threads(); i++)
-		// 	printf("Thread %d: %d\n", omp_get_thread_num(), j);
+		#pragma omp for
+		for(int i = 0; i < omp_get_num_threads(); i++)
+			printf("Thread %d: %d\n", omp_get_thread_num(), j);
 
 		#pragma omp for
 		for(int i = 0 ; i < n; i++)
@@ -108,10 +108,10 @@ void compacta_vetor()
 			// printf("Thread %d: %d\n", omp_get_thread_num(), i);
 			if(vetIn[i] != 0)
 			{
-				// printf("Thread %d: %d\n", omp_get_thread_num(), j);
-				j--; // Decrementa o indice para ajustar a posição visto que inicia na posição 0
+				//printf("Thread %d: %d\n", omp_get_thread_num(), j);
 				valor[j] = vetIn[i];
-				posicao[j] = i;	
+				posicao[j] = i;
+				j++; // Cada thread possui seu indice que vai ser incrementado de forma privada
 			}	
 		}
 	}
