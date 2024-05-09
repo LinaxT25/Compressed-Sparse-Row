@@ -1,4 +1,3 @@
-
 // Programa sequencial
 // Representa um vetor esparso em um formato compacto
 // Compilar com: gcc esparso_seq.c -fopenmp -o esparso_seq -Wall
