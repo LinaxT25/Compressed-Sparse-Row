@@ -1,3 +1,4 @@
+
 // Programa sequencial
 // Representa um vetor esparso em um formato compacto
 // Compilar com: gcc esparso_seq.c -fopenmp -o esparso_seq -Wall
@@ -78,10 +79,10 @@ void conta_elementos_dif0()
 			}	
 	}
 	
-// 	#pragma omp parallel for
-// 	for(int i = 0; i < omp_get_num_threads(); i++)
-// 		printf("Thread %d: %d\n", i, vetaux[i]);
-// 	printf("##################################################\n");
+	// #pragma omp parallel for
+	// for(int i = 0; i < omp_get_num_threads(); i++)
+	// 	printf("Thread %d: %d\n", i, vetaux[i]);
+	// printf("##################################################\n");
 }
 
 // ----------------------------------------------------------------------------
