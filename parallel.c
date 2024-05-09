@@ -55,66 +55,35 @@ void aloca_vetores_saida()
 void conta_elementos_dif0()
 {
 	m = 0;
-
-	#pragma omp parallel
-	{
-		// Aloca o vetor auxilar usa somente uma thread para evitar problemas de concorrência
-		#pragma omp single
-		vetaux = malloc(omp_get_num_threads() * sizeof(int));
-
-		// Inicializa com 0 o vetor auxiliar em cada thread, como consequência em cada posição do vetor auxiliar
-		#pragma omp for
-		for(int i = 0; i < omp_get_num_threads(); i++)
-			vetaux[omp_get_thread_num()] = 0;
-
-		// Pega o número de interações que cada thread vai fazer
-		#pragma omp for reduction(+:m)
-		for (int i = 0; i < n; i++)
-			if (vetIn[i] != 0)
-			{
-				m++;
-				#pragma omp atomic
-				vetaux[omp_get_thread_num()] = vetaux[omp_get_thread_num()] + 1;
-			}	
-	}
 	
-	// #pragma omp parallel for
-	// for(int i = 0; i < omp_get_num_threads(); i++)
-	// 	printf("Thread %d: %d\n", i, vetaux[i]);
-	// printf("##################################################\n");
+	// Paralelizar a contagem dos elementos diferentes de 0
+	#pragma omp parallel for reduction(+:m)
+	for(int i=0; i < n; i++)
+		if(vetIn[i] != 0)
+			m++;
+	
 }
 
 // ----------------------------------------------------------------------------
 void compacta_vetor()
 { 
-	#pragma omp parallel
-	{
-		int j = 0; // Variável j para controlar o indice dos vetores de saída
+	int aux = 0; // Variável auxilar para incrementar o indice
 
-		// Cada thread vai realizar determinado número de interações com base na quantidade de threads
-		// que serão distribuídas no laço. A variável j vai ser incrementada para de acordo com as
-		// interações das threads, de forma a garantir a posição certa do indice.
-		for(int i = 0; i < omp_get_thread_num(); i++)
-			j = j + vetaux[i];
-
-		// #pragma omp for
-		// for(int i = 0; i < omp_get_num_threads(); i++)
-		// 	printf("Thread %d: %d\n", omp_get_thread_num(), j);
-
-		#pragma omp for
-		for(int i = 0 ; i < n; i++)
+	// Quebrar o loop em 2 de forma a resolver o problema de dependência
+	// Primeiro for pegando somente os indices diferentes de 0
+	for(int i=0; i < n; i++)
+		if(vetIn[i] != 0)
 		{
-			// printf("Thread %d: %d\n", omp_get_thread_num(), j);
-			// printf("Thread %d: %d\n", omp_get_thread_num(), i);
-			if(vetIn[i] != 0)
-			{
-				//printf("Thread %d: %d\n", omp_get_thread_num(), j);
-				valor[j] = vetIn[i];
-				posicao[j] = i;
-				j++; // Cada thread possui seu indice que vai ser incrementado de forma privada
-			}	
+			posicao[aux] = i;
+			aux++;
 		}
-	}
+
+	// Segundo for colocando os valores
+    #pragma omp parallel for
+	for (int i = 0; i < m; i++)
+	{
+		valor[i] = vetIn[posicao[i]];
+	}		
 }
 
 // ----------------------------------------------------------------------------
